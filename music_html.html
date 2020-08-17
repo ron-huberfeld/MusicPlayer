@@ -1,0 +1,42 @@
+<head>
+
+<title>The Music Player</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+<meta charset="UTF-8">
+
+</head>
+
+<body>
+
+<h1>The Music Player</h1>
+
+<div id="my_player" class="player-wrapper">
+	
+	<div class="player-top">
+		<div class="player-text">Some Text Here</div>
+		<button class="player-button player-button-prev">&lt;</button>
+		<button class="player-button player-button-next">&gt;</button>
+	</div>
+
+	<audio class="player-audio" controls></audio>
+	
+	<div class="list-loader" style="display:none">
+		Loading Songs...
+	</div>
+	
+	<div class="error-message" style="display:none">
+		Load Songs Failed
+	</div>
+	
+	<div class="songs-list">
+		<a href="songs/example.mp3" class="selected">Song Example</a>
+		<a href="songs/example2.mp3" >Song Example 2</a>
+		<a href="songs/example3.mp3" >Song Example 3</a>
+		<a href="songs/example4.mp3" >Song Example 4</a>
+	</div>
+	
+</div>
+
+<script src="script.js"></script>
+
+</body>
