@@ -1,31 +1,31 @@
 <head>
-
-<title>The Music Player</title>
-<link rel="stylesheet" type="text/css" href="style.css">
-<meta charset="UTF-8">
-
+  <title>The Music Player</title>
+  <link rel="stylesheet" type="text/css" href="style.css" />
+  <meta charset="UTF-8" />
 </head>
 
 <body>
+  <h1>The Music Player</h1>
 
-<h1>The Music Player</h1>
+  <div id="my_player" class="player-wrapper"></div>
 
-<div id="my_player" class="player-wrapper"></div>
+  <div id="my_player2" class="player-wrapper"></div>
 
-<script src="script.js"></script>
+  <script src="script.js"></script>
 
-<script>
+  <script>
+    //this is the player initialization should look
 
-//this is the player initialization should look
+    var g_objPlayer = new MyPlayer("my_player", {
+      folder: "abba",
+      autoplay: false,
+      shuffle: false,
+    });
 
-/*	
-	var g_objPlayer = new MyPlayer("my_player", {
-		folder:"abba",
-		autoplay:false,
-		shuffle:false
-	});
-*/	
-	
-</script>
-
+    var g_objPlayer = new MyPlayer("my_player2", {
+      folder: "songs",
+      autoplay: false,
+      shuffle: false,
+    });
+  </script>
 </body>
