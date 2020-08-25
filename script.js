@@ -8,10 +8,13 @@ function MyPlayer(g_playerId, params) {
   let g_objButtonNext;
   let g_objButtonPrev;
 
+  /**
+   * Build initial html page with default player settings
+   */
   const buildPlayerHtml = () => {
     const html = `
     <div class="player-top">
-      <div class="player-text">Some Text Here</div>
+      <div class="player-text">Select a song...</div>
       <button class="player-button player-button-prev">&lt;</button>
       <button class="player-button player-button-next">&gt;</button>
   </div>
@@ -37,41 +40,115 @@ function MyPlayer(g_playerId, params) {
     g_objPlayer.innerHTML = html;
   };
 
-  const showElement = (element) => {
-    element.style.display = 'block';
+  /**
+   * Display the error message element
+   *
+   * @param {HTMLElement} element
+   */
+  const showErrorElement = (element) => {
+    element.style.display = "block";
   };
 
-  const displayMessage = (message) => {
+  /**
+   * Set error message string to display
+   * @param {String} message
+   */
+  const setErrorMessage = (message) => {
     if (!g_objErrorMessage) {
       alert(message);
       return false;
     }
     g_objErrorMessage.innerHTML = message;
-    showElement(g_objErrorMessage);
+    showErrorElement(g_objErrorMessage);
     return true;
   };
 
-  const handleLinkClick = (e) => {
-    // Prevent refresh
-    e.preventDefault();
+  /**
+   * Get first song link object from the list of songs
+   */
+  const getFirstSong = () =>
+    document.querySelector(`#${g_playerId} .songs-list a:first-child`);
 
-    // Set selected song
-    const linkObj = e.target;
-    if (g_selectedSong) {
-      g_selectedSong.remove("selected");
+  /**
+   * Get last song link object from the list of songs
+   */
+  const getLastSong = () =>
+    document.querySelector(`#${g_playerId} .songs-list a:last-child`);
+
+  /**
+   * Handle the click on the player's 'next' button
+   */
+  const handleNextClick = () => {
+    if (!g_selectedSong) {
+      // No selected song yet so start from the top of the list
+      setLink(getFirstSong());
+    } else {
+      const objNextSong = g_selectedSong.nextSibling;
+      if (!objNextSong) {
+        // We are at the end of the list so start from the top again
+        setLink(getFirstSong());
+      } else {
+        // Play next song
+        setLink(objNextSong);
+      }
     }
-    g_selectedSong = linkObj.classList;
-    linkObj.classList.add("selected");
-    g_objText.innerHTML = linkObj.innerHTML;
+  };
+
+  /**
+   * Handle the click on the player's 'previous' button
+   */
+  const handlePrevClick = () => {
+    if (!g_selectedSong) {
+      // No selected song yet so start from the end of the list
+      setLink(getLastSong());
+    } else {
+      const objPrevSong = g_selectedSong.previousSibling;
+      if (!objPrevSong) {
+        // We are at the top of the list so start from the end again
+        setLink(getLastSong());
+      } else {
+        // Play previous song
+        setLink(objPrevSong);
+      }
+    }
+  };
+
+  /**
+   * Set the selected song
+   * @param {Object} linkObj
+   */
+  const setLink = (linkObj) => {
+    if (g_selectedSong) {
+      g_selectedSong.classList.remove("selected");
+    }
+    g_selectedSong = linkObj;
+    g_selectedSong.classList.add("selected");
+    g_objText.innerHTML = g_selectedSong.innerHTML;
 
     // Play song
-    const { href } = e.target;
+    const { href } = linkObj;
     const htmlSong = `<source src="${href}" type="audio/mpeg">`;
     g_objAudio.innerHTML = htmlSong;
     g_objAudio.load();
     g_objAudio.play();
   };
 
+  /**
+   * Handle the click on song in the list
+   * @param {Event} e
+   */
+  const handleLinkClick = (e) => {
+    // Prevent refresh
+    e.preventDefault();
+
+    // Set selected song
+    setLink(e.target);
+  };
+
+  /**
+   * Parse songs list into html elements
+   * @param {String} data
+   */
   const parseSongList = (data) => {
     const trimData = data.trim().split("\r\n");
     const songsNameArr = trimData.map((songName) =>
@@ -90,8 +167,18 @@ function MyPlayer(g_playerId, params) {
     for (let i = 0; i < children.length; i++) {
       children[i].addEventListener("click", handleLinkClick);
     }
+
+    // Add event listener to the buttons - next/prev song
+    g_objButtonNext.addEventListener("click", handleNextClick);
+    g_objButtonPrev.addEventListener("click", handlePrevClick);
+
+    // Add event listener to the player - when song ends play the next
+    g_objAudio.addEventListener("ended", handleNextClick);
   };
 
+  /**
+   * Get songs list from specific folder using AJAX
+   */
   const getSongList = () => {
     const { folder } = params;
     const url = `${folder}/songs.txt`;
@@ -102,49 +189,53 @@ function MyPlayer(g_playerId, params) {
         return false;
       }
       if (this.status !== 200) {
-        displayMessage("Error occurred");
+        setErrorMessage("Error occurred while retrieving songs");
+        return false;
       }
       parseSongList(this.responseText);
+      return true;
     };
     xhttp.open("GET", url, true);
     xhttp.send();
   };
 
+  /**
+   * Initialize player's html elements
+   */
   const init = () => {
-    console.log("Start init...");
     /* Root Element */
     g_objPlayer = document.getElementById(g_playerId);
     if (!g_objPlayer) {
-      displayMessage("Player ID not found");
+      setErrorMessage("Player ID not found");
+      return false;
     }
 
     buildPlayerHtml();
 
     /* Error messages element */
     g_objErrorMessage = document.querySelector(`#${g_playerId} .error-message`);
-    console.log(g_objErrorMessage);
 
     /* Audio player element */
     g_objAudio = document.querySelector(`#${g_playerId} .player-audio`);
-    console.log(g_objAudio);
 
     /* Player's current song text element */
     g_objText = document.querySelector(`#${g_playerId} .player-text`);
-    console.log(g_objText);
 
     /* Songs list */
     g_songsList = document.querySelector(`#${g_playerId} .songs-list`);
-    console.log(g_songsList);
 
-    /* Songs list */
-    g_objButtonNext = document.querySelector(`#${g_playerId} .player-button.player-button-next`);
-    console.log(g_objButtonNext);
+    /* Player's next button */
+    g_objButtonNext = document.querySelector(
+      `#${g_playerId} .player-button-next`
+    );
 
-    /* Songs list */
-    g_objButtonPrev = document.querySelector(`#${g_playerId} .player-button.player-button-prev`);
-    console.log(g_objButtonPrev);
+    /* Player's previous button */
+    g_objButtonPrev = document.querySelector(
+      `#${g_playerId} .player-button-prev`
+    );
 
     getSongList();
+    return true;
   };
 
   init();

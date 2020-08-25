@@ -23,6 +23,9 @@ For a more in-depth tour, check out this video:
     [x] - mark selected song in the list
     [x] - update the player title
     [x] - load and play song
-[ ] - add event listener to the next and prev buttons
-[ ] - when button (next/prev) clicked handle song selection accordingly
+[x] - add event listener to the next and prev buttons
+[x] - when button (next/prev) clicked handle song selection accordingly
+[x] - handle start of next song in the list when song finish playing 
+[ ] - handle autoplay option
+[ ] - handle shuffle option
 
