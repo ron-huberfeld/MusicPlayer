@@ -50,6 +50,15 @@ function MyPlayer(g_playerId, params) {
   };
 
   /**
+   * Hide the html element
+   *
+   * @param {HTMLElement} element
+   */
+  const hideElement = (element) => {
+    element.style.display = "none";
+  };
+
+  /**
    * Set error message string to display
    *
    * @param {String} message
@@ -206,6 +215,7 @@ function MyPlayer(g_playerId, params) {
       }
       if (this.status !== 200) {
         setErrorMessage("Error occurred while retrieving songs");
+        hideElement(g_songsList);
         return false;
       }
       parseSongList(this.responseText);
