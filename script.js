@@ -51,6 +51,7 @@ function MyPlayer(g_playerId, params) {
 
   /**
    * Set error message string to display
+   *
    * @param {String} message
    */
   const setErrorMessage = (message) => {
@@ -115,6 +116,7 @@ function MyPlayer(g_playerId, params) {
 
   /**
    * Set the selected song
+   *
    * @param {Object} linkObj
    */
   const setLink = (linkObj) => {
@@ -135,6 +137,7 @@ function MyPlayer(g_playerId, params) {
 
   /**
    * Handle the click on song in the list
+   *
    * @param {Event} e
    */
   const handleLinkClick = (e) => {
@@ -146,15 +149,28 @@ function MyPlayer(g_playerId, params) {
   };
 
   /**
+   * Randomly shuffle the songs list
+   *
+   * @param {Array<String>} arr
+   */
+  const shuffleArray = (arr) =>
+    arr
+      .map((a) => [Math.random(), a])
+      .sort((a, b) => a[0] - b[0])
+      .map((a) => a[1]);
+
+  /**
    * Parse songs list into html elements
+   *
    * @param {String} data
    */
   const parseSongList = (data) => {
     const trimData = data.trim().split("\r\n");
-    const songsNameArr = trimData.map((songName) =>
-      songName.replace(".mp3", "")
-    );
-    const { folder } = params;
+    let songsNameArr = trimData.map((songName) => songName.replace(".mp3", ""));
+    const { folder, shuffle } = params;
+    if (shuffle) {
+      songsNameArr = shuffleArray(songsNameArr);
+    }
     let songsHtml = "";
     songsNameArr.map(
       (songName) =>
@@ -183,8 +199,8 @@ function MyPlayer(g_playerId, params) {
     const { folder } = params;
     const url = `${folder}/songs.txt`;
 
-    const xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function () {
+    const xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
       if (this.readyState !== 4) {
         return false;
       }
@@ -195,8 +211,8 @@ function MyPlayer(g_playerId, params) {
       parseSongList(this.responseText);
       return true;
     };
-    xhttp.open("GET", url, true);
-    xhttp.send();
+    xhr.open("GET", url, true);
+    xhr.send();
   };
 
   /**
