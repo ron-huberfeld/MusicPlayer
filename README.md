@@ -27,5 +27,4 @@ For a more in-depth tour, check out this video:
 [x] - when button (next/prev) clicked handle song selection accordingly
 [x] - handle start of next song in the list when song finish playing 
 [x] - handle shuffle option
-[ ] - handle autoplay option
-
+[x] - handle autoplay option (** note - this is not working in Chrome browser)

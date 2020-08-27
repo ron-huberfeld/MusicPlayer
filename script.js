@@ -12,6 +12,11 @@ function MyPlayer(g_playerId, params) {
    * Build initial html page with default player settings
    */
   const buildPlayerHtml = () => {
+    const { autoplay } = params;
+    let isMutedHTML = "";
+    if (autoplay) {
+      isMutedHTML = "muted";
+    }
     const html = `
     <div class="player-top">
       <div class="player-text">Select a song...</div>
@@ -19,7 +24,7 @@ function MyPlayer(g_playerId, params) {
       <button class="player-button player-button-next">&gt;</button>
   </div>
 
-  <audio class="player-audio" controls></audio>
+  <audio class="player-audio" controls ${isMutedHTML}></audio>
 
     <div class="list-loader" style="display:none">
       Loading Songs...
@@ -205,7 +210,7 @@ function MyPlayer(g_playerId, params) {
    * Get songs list from specific folder using AJAX
    */
   const getSongList = () => {
-    const { folder } = params;
+    const { folder, autoplay } = params;
     const url = `${folder}/songs.txt`;
 
     const xhr = new XMLHttpRequest();
@@ -219,6 +224,9 @@ function MyPlayer(g_playerId, params) {
         return false;
       }
       parseSongList(this.responseText);
+      if (autoplay) {
+        setLink(getFirstSong());
+      }
       return true;
     };
     xhr.open("GET", url, true);
